@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include "Libs/PerlinNoise.h"
 #include "Libs/rlutil.h"
 
 using namespace std;
@@ -10,10 +11,17 @@ public:
 	int y;
 };
 
+string get_map(int velikost, int seed);
+
 int main()
 {
-	string p = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXOOOOOOOXXXXXOOOOOXXXXXXOOXXXXXXXXXXXXXOOOOOOOOOXXXXOOOOOOXXXXOOOOXXXXXXXXXXXXOOOOOOOOXXXXXOOOOOXXXXXXOOOOOXXXXXXXXXXXOOOOOOOOXXXOOOOOXXXXXXXOOOOOOXXXXXXXXXXXOOOOOOOOOOOOOOXXXXXXXOOOOOXXXXXXXXXXXXXXXOOOOOOOOOOXXXXXXXXXXOOXXXXXXXXXXXXXXXXXXXXOOOOOXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXOOOXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-	bool Game = true; int debelina = 39, st = p.length(), sirina = st / debelina, izbira, x, y;
+	int velikost, seed;
+	cout << "Vnesi velikost mape: ";
+	cin >> velikost;
+	cout << "Vnesi seed: ";
+	cin >> seed;
+	string p= get_map(velikost, seed);
+	bool Game = true; int debelina = velikost, st = p.length(), sirina = debelina, izbira, x, y;
 	player Pl;
 	Pl.x = 0;
 	Pl.y = 0;
@@ -30,6 +38,8 @@ int main()
 					rlutil::setColor(2);
 				else if (p[i] == 'X')
 					rlutil::setColor(1);
+				else if (p[i] == 'M')
+					rlutil::setColor(7);
 				cout << p[i];
 			}
 		}
@@ -69,4 +79,26 @@ int main()
 		}
 	}
 	return 0;
+}
+
+string get_map(int velikost, int seed) {
+	string map;
+	siv::PerlinNoise pn(seed);
+	for (int i = 0; i < velikost; i++) { // y;
+		for (int j = 0; j < velikost; j++) {
+			double x = (double)j / ((double)velikost);
+			double y = (double)i / ((double)velikost);
+
+			double n = pn.noise(10 * x, 10 * y, 0.8);
+
+			if (n < 0.01)
+				map += "X";
+			else if (n < 0.16)
+				map += "M";
+			else
+				map += "O";
+		}
+		cout << endl;
+	}
+	return map;
 }
