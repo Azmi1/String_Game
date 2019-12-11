@@ -13,6 +13,8 @@ public:
 
 string get_map(int velikost, int seed);
 
+void Load_Map(string p, int debelina, int st, player Pl);
+
 int main()
 {
 	int velikost, seed;
@@ -26,23 +28,7 @@ int main()
 	Pl.x = 0;
 	Pl.y = 0;
 	while (Game == true) {
-		for (int i = 0; i < st; i++) {
-			if (i % debelina == 0 && i != 0)
-				cout << endl;
-			if (Pl.x + Pl.y * debelina == i) {
-				rlutil::setColor(4);
-				cout << 'P';
-			}
-			else {
-				if (p[i] == 'O')
-					rlutil::setColor(2);
-				else if (p[i] == 'X')
-					rlutil::setColor(1);
-				else if (p[i] == 'M')
-					rlutil::setColor(7);
-				cout << p[i];
-			}
-		}
+		Load_Map(p, velikost, st, Pl);
 		cout << endl;
 		rlutil::setColor(7);
 		cout << "Izberi med opcijami: " << endl;
@@ -60,7 +46,7 @@ int main()
 				cout << "Minimalen premik(v levo): " << Pl.x << endl;
 				cout << "Vpisi premik po x osi: ";
 				cin >> x;
-			}
+			}																			
 			cout << "Vpisi premik po y osi: ";
 			cin >> y;
 			while (Pl.y + y > sirina - 1 || Pl.y + y < 0) {
@@ -92,7 +78,7 @@ string get_map(int velikost, int seed) {
 			double n = pn.noise(10 * x, 10 * y, 0.8);
 
 			if (n < 0.01)
-				map += "X";
+				map += (char)176;
 			else if (n < 0.16)
 				map += "M";
 			else
@@ -101,4 +87,40 @@ string get_map(int velikost, int seed) {
 		cout << endl;
 	}
 	return map;
+}
+
+void Load_Map(string p, int debelina, int st, player Pl) {
+	cout << (char)201;
+	for (int i = 0; i < 64; i++) {
+		cout << (char)205;
+	}
+	cout << (char)187 << endl;
+	cout << (char)186;
+	int zgornja_meja = Pl.x - 32 - (debelina * 32);
+	if (zgornja_meja < 0)
+		zgornja_meja = 0;
+	int spodnja_meja = Pl.x + 32 + (debelina * 32);
+	if (spodnja_meja > st)
+		spodnja_meja = st;
+	for (int i = zgornja_meja; i < spodnja_meja; i++) {
+		if (i % 32 == 0 && i != 0) {
+			rlutil::setColor(7);
+			cout << (char)186 << endl << (char)186;
+			i += -64 + debelina;
+		}
+		if (Pl.x + Pl.y * debelina == i) {
+			rlutil::setColor(4);
+			cout << 'P';
+		}
+		else {
+			if (p[i] == 'O')
+				rlutil::setColor(2);
+			else if (p[i] == (char)176)
+				rlutil::setColor(1);
+			else if (p[i] == 'M')
+				rlutil::setColor(7);
+			cout << p[i];
+		}
+	}
+
 }
