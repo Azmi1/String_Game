@@ -13,7 +13,7 @@ public:
 
 string get_map(int velikost, int seed);
 
-void Load_Map(string p, int debelina, int st, player Pl);
+void Load_Map(string, int, int, player);
 
 int main()
 {
@@ -28,6 +28,7 @@ int main()
 	Pl.x = 0;
 	Pl.y = 0;
 	while (Game == true) {
+		rlutil::setColor(7);
 		Load_Map(p, velikost, st, Pl);
 		cout << endl;
 		rlutil::setColor(7);
@@ -77,50 +78,81 @@ string get_map(int velikost, int seed) {
 
 			double n = pn.noise(10 * x, 10 * y, 0.8);
 
-			if (n < 0.01)
+			if (n < 0.01) {
+				rlutil::setColor(1);
+				cout << (char)176;
 				map += (char)176;
-			else if (n < 0.16)
+			}
+			else if (n < 0.16) {
+				rlutil::setColor(7);
+				cout << 'M';
 				map += "M";
-			else
+			}
+			else {
+				rlutil::setColor(2);
+				cout << 'O';
 				map += "O";
+			}
 		}
 		cout << endl;
 	}
 	return map;
 }
 
-void Load_Map(string p, int debelina, int st, player Pl) {
+void Load_Map(string p, int velikost, int st, player Pl) {
 	cout << (char)201;
 	for (int i = 0; i < 64; i++) {
 		cout << (char)205;
 	}
-	cout << (char)187 << endl;
+	cout << (char)187 << endl; 
 	cout << (char)186;
-	int zgornja_meja = Pl.x - 32 - (debelina * 32);
-	if (zgornja_meja < 0)
-		zgornja_meja = 0;
-	int spodnja_meja = Pl.x + 32 + (debelina * 32);
-	if (spodnja_meja > st)
-		spodnja_meja = st;
-	for (int i = zgornja_meja; i < spodnja_meja; i++) {
-		if (i % 32 == 0 && i != 0) {
-			rlutil::setColor(7);
+	int Velikost_Ekrana = 64;
+	int zacetna_verednost = (Pl.x + Pl.y * velikost) - (32 + 32 * velikost);
+	int koncna_vrednost = (Pl.x + Pl.y * velikost) + (32 + 32 * velikost);
+	if (zacetna_verednost < 0) {
+		zacetna_verednost = 0;
+	}
+	int j = 0;
+	for (int i = zacetna_verednost; i <= koncna_vrednost; i++) {
+			cout << p[i];
+		if (i - (zacetna_verednost + (velikost * j)) == 63) {
+			j++;
+			i += velikost - Velikost_Ekrana;
 			cout << (char)186 << endl << (char)186;
-			i += -64 + debelina;
 		}
-		if (Pl.x + Pl.y * debelina == i) {
+	}
+}
+
+/*int visina = 64;
+//if((visina/2)*debelina >)
+int steps = 32;
+int j = (Pl.x + Pl.y * debelina) - 32 + (debelina * (Pl.y - steps));
+if (j < 0)
+	j = 0;
+int oj = j;
+cout << j << endl;
+for (int i = 0; i < 64; i++) {
+	for (; j < oj + 64 ; j++) {
+		if (j < 0)
+			j = 0;
+		if (Pl.x + Pl.y * debelina == j) {
 			rlutil::setColor(4);
 			cout << 'P';
 		}
 		else {
-			if (p[i] == 'O')
+			if (p[j] == 'O')
 				rlutil::setColor(2);
-			else if (p[i] == (char)176)
+			else if (p[j] == (char)176)
 				rlutil::setColor(1);
-			else if (p[i] == 'M')
+			else if (p[j] == 'M')
 				rlutil::setColor(7);
-			cout << p[i];
+			cout << p[j];
 		}
-	}
 
-}
+	}
+	rlutil::setColor(7);
+	cout << (char)186 << endl << (char)186;
+	steps -= 1;
+	j = (Pl.x + Pl.y * debelina) - 32 - (debelina * (Pl.y - steps));
+	oj = j;
+	}*/
