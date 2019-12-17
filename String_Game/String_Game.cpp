@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <conio.h>
 #include "Libs/PerlinNoise.h"
 #include "Libs/rlutil.h"
 
@@ -11,38 +12,25 @@ public:
 	int y;
 };
 
-string get_map(int velikost, int seed);
+double get_map(int seed, int, int x, int y);
+
+void Load_Map(string, int, int, player);
 
 int main()
 {
-	int velikost, seed;
-	cout << "Vnesi velikost mape: ";
-	cin >> velikost;
+	int seed, sensitivity;
 	cout << "Vnesi seed: ";
 	cin >> seed;
-	string p= get_map(velikost, seed);
-	bool Game = true; int debelina = velikost, st = p.length(), sirina = debelina, izbira, x, y;
+	cout << "Vnesi sensitivity: ";
+	cin >> sensitivity;
+	bool Game = true, Input_Buffer = false; int izbira, x, yr;
 	player Pl;
 	Pl.x = 0;
 	Pl.y = 0;
+	Load_Map(seed, sensitivity, Pl);
 	while (Game == true) {
-		for (int i = 0; i < st; i++) {
-			if (i % debelina == 0 && i != 0)
-				cout << endl;
-			if (Pl.x + Pl.y * debelina == i) {
-				rlutil::setColor(4);
-				cout << 'P';
-			}
-			else {
-				if (p[i] == 'O')
-					rlutil::setColor(2);
-				else if (p[i] == 'X')
-					rlutil::setColor(1);
-				else if (p[i] == 'M')
-					rlutil::setColor(7);
-				cout << p[i];
-			}
-		}
+		rlutil::setColor(7);
+		Load_Map(p, velikost, st, Pl);
 		cout << endl;
 		rlutil::setColor(7);
 		cout << "Izberi med opcijami: " << endl;
@@ -60,16 +48,9 @@ int main()
 				cout << "Minimalen premik(v levo): " << Pl.x << endl;
 				cout << "Vpisi premik po x osi: ";
 				cin >> x;
-			}
+			}																			
 			cout << "Vpisi premik po y osi: ";
 			cin >> y;
-			while (Pl.y + y > sirina - 1 || Pl.y + y < 0) {
-				cout << "Premik po y osi prevelik ali premajhen" << endl;
-				cout << "Maksimalen premik(na gor): " << -Pl.y << endl;
-				cout << "Minimalen premik(na dol): " << (sirina - Pl.y) - 1 << endl;
-				cout << "Vpisi premik po y osi: ";
-				cin >> y;
-			}
 			Pl.x += x;
 			Pl.y += y;
 			break;
@@ -77,28 +58,105 @@ int main()
 			Game = false;
 			break;
 		}
+		*/
 	}
 	return 0;
 }
 
-string get_map(int velikost, int seed) {
-	string map;
+double get_map(int seed, int sensitivity, int x, int y) {
 	siv::PerlinNoise pn(seed);
-	for (int i = 0; i < velikost; i++) { // y;
-		for (int j = 0; j < velikost; j++) {
-			double x = (double)j / ((double)velikost);
-			double y = (double)i / ((double)velikost);
+	double x1 = (double)x / ((double)sensitivity);
+	double y1 = (double)y / ((double)sensitivity);
 
-			double n = pn.noise(10 * x, 10 * y, 0.8);
+	double n = pn.noise(10 * x1, 10 * y1, 0.8);
+	return n;
+}
 
-			if (n < 0.01)
-				map += "X";
-			else if (n < 0.16)
+void Load_Map(int seed, int sensitivity,player Pl) {
+	cout << (char)201;
+	for (int i = 0; i < 64; i++) {
+		cout << (char)205;
+	}
+	cout << (char)187 << endl; 
+	int Velikost_Ekrana = 64;
+	int zacetna_verednost = Pl.x -32;
+	int visina = Pl.y + 16;
+
+			if (n < 0.01) {
+				rlutil::setColor(1);
+				cout << (char)176;
+				map += (char)176;
+			}
+			else if (n < 0.16) {
+				rlutil::setColor(7);
+				cout << 'M';
 				map += "M";
-			else
+			}
+			else {
+				rlutil::setColor(2);
+				cout << 'O';
 				map += "O";
+			}
 		}
 		cout << endl;
 	}
 	return map;
 }
+
+void Load_Map(string p, int velikost, int st, player Pl) {
+	cout << (char)201;
+	for (int i = 0; i < 64; i++) {
+		cout << (char)205;
+	}
+	cout << (char)187 << endl; 
+	cout << (char)186;
+	int Velikost_Ekrana = 64;
+	int zacetna_verednost = (Pl.x + Pl.y * velikost) - (32 + 32 * velikost);
+	int koncna_vrednost = (Pl.x + Pl.y * velikost) + (32 + 32 * velikost);
+	if (zacetna_verednost < 0) {
+		zacetna_verednost = 0;
+	}
+	int j = 0;
+	for (int i = zacetna_verednost; i <= koncna_vrednost; i++) {
+			cout << p[i];
+		if (i - (zacetna_verednost + (velikost * j)) == 63) {
+			j++;
+			i += velikost - Velikost_Ekrana;
+			cout << (char)186 << endl << (char)186;
+		}
+	}
+}
+
+/*int visina = 64;
+//if((visina/2)*debelina >)
+int steps = 32;
+int j = (Pl.x + Pl.y * debelina) - 32 + (debelina * (Pl.y - steps));
+if (j < 0)
+	j = 0;
+int oj = j;
+cout << j << endl;
+for (int i = 0; i < 64; i++) {
+	for (; j < oj + 64 ; j++) {
+		if (j < 0)
+			j = 0;
+		if (Pl.x + Pl.y * debelina == j) {
+			rlutil::setColor(4);
+			cout << 'P';
+		}
+		else {
+			if (p[j] == 'O')
+				rlutil::setColor(2);
+			else if (p[j] == (char)176)
+				rlutil::setColor(1);
+			else if (p[j] == 'M')
+				rlutil::setColor(7);
+			cout << p[j];
+		}
+
+	}
+	rlutil::setColor(7);
+	cout << (char)186 << endl << (char)186;
+	steps -= 1;
+	j = (Pl.x + Pl.y * debelina) - 32 - (debelina * (Pl.y - steps));
+	oj = j;
+	}*/
