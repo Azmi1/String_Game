@@ -14,8 +14,20 @@ public:
 
 double get_map(int seed, int, int x, int y);
 
-void Load_Map(string, int, int, player);
+void Load_Map(int, int, player);
 
+/*int main() {
+	int a = 1;
+	while (1) {
+		if (kbhit()){
+			a = getch();
+		}
+		cout << 1;
+		if (a == '0')
+			break;
+	}
+}
+*/
 int main()
 {
 	int seed, sensitivity;
@@ -23,16 +35,34 @@ int main()
 	cin >> seed;
 	cout << "Vnesi sensitivity: ";
 	cin >> sensitivity;
-	bool Game = true, Input_Buffer = false; int izbira, x, yr;
+	bool Game = true, Input_Buffer = false; int izbira, x;
 	player Pl;
 	Pl.x = 0;
 	Pl.y = 0;
 	Load_Map(seed, sensitivity, Pl);
 	while (Game == true) {
-		rlutil::setColor(7);
-		Load_Map(p, velikost, st, Pl);
-		cout << endl;
-		rlutil::setColor(7);
+		if (kbhit() && Input_Buffer == false) {
+			Input_Buffer = true;
+			char input = getch();
+			if (input == 's')
+				Pl.y += 1;
+			else if (input == 'w')
+				Pl.y -= 1;
+			if (input == 'd')
+				Pl.x += 1;
+			else if (input == 'a')
+				Pl.x -= 1;
+			system("CLS");
+			Load_Map(seed, sensitivity, Pl);
+			rlutil::setColor(7);
+			cout << endl;
+			rlutil::setColor(7);
+		}
+		else {
+			Input_Buffer = false;
+
+		}
+		/*
 		cout << "Izberi med opcijami: " << endl;
 		cout << "1.) Premik" << endl;
 		cout << "9.) Konec" << endl;
@@ -42,13 +72,6 @@ int main()
 		case 1:
 			cout << "Vpisi premik po x osi: ";
 			cin >> x;
-			while (Pl.x + x >= debelina || Pl.x + x < 0) {
-				cout << "Premik po x osi prevelik ali premajhen" << endl;
-				cout << "Maksimalen premik(v desno): " << debelina - 1 - Pl.x << endl;
-				cout << "Minimalen premik(v levo): " << Pl.x << endl;
-				cout << "Vpisi premik po x osi: ";
-				cin >> x;
-			}																			
 			cout << "Vpisi premik po y osi: ";
 			cin >> y;
 			Pl.x += x;
@@ -72,60 +95,50 @@ double get_map(int seed, int sensitivity, int x, int y) {
 	return n;
 }
 
-void Load_Map(int seed, int sensitivity,player Pl) {
+void Load_Map(int seed, int sensitivity, player Pl) {
 	cout << (char)201;
 	for (int i = 0; i < 64; i++) {
 		cout << (char)205;
 	}
-	cout << (char)187 << endl; 
+	cout << (char)187 << endl;
 	int Velikost_Ekrana = 64;
-	int zacetna_verednost = Pl.x -32;
+	int zacetna_verednost = Pl.x - 32;
 	int visina = Pl.y + 16;
 
-			if (n < 0.01) {
+	int j = 0;
+	double n;
+	for (int i = Pl.y - 16; i < visina; i++) {
+		cout << (char)186;
+		for (int j = zacetna_verednost; j < Pl.x + 32; j++) {
+			n = get_map(seed, sensitivity, j, i);
+			if (Pl.x == j && Pl.y == i) {
+				rlutil::setColor(4);
+				cout << 'P';
+			}
+			else if (n < 0.2) {
 				rlutil::setColor(1);
 				cout << (char)176;
-				map += (char)176;
 			}
-			else if (n < 0.16) {
+			else if (n < 0.3) {
 				rlutil::setColor(7);
 				cout << 'M';
-				map += "M";
 			}
 			else {
 				rlutil::setColor(2);
 				cout << 'O';
-				map += "O";
 			}
 		}
+		rlutil::setColor(7);
+		cout << (char)186;
 		cout << endl;
 	}
-	return map;
-}
-
-void Load_Map(string p, int velikost, int st, player Pl) {
-	cout << (char)201;
+	cout << (char)200;
 	for (int i = 0; i < 64; i++) {
 		cout << (char)205;
 	}
-	cout << (char)187 << endl; 
-	cout << (char)186;
-	int Velikost_Ekrana = 64;
-	int zacetna_verednost = (Pl.x + Pl.y * velikost) - (32 + 32 * velikost);
-	int koncna_vrednost = (Pl.x + Pl.y * velikost) + (32 + 32 * velikost);
-	if (zacetna_verednost < 0) {
-		zacetna_verednost = 0;
-	}
-	int j = 0;
-	for (int i = zacetna_verednost; i <= koncna_vrednost; i++) {
-			cout << p[i];
-		if (i - (zacetna_verednost + (velikost * j)) == 63) {
-			j++;
-			i += velikost - Velikost_Ekrana;
-			cout << (char)186 << endl << (char)186;
-		}
-	}
+	cout << (char)188 << endl;
 }
+
 
 /*int visina = 64;
 //if((visina/2)*debelina >)
