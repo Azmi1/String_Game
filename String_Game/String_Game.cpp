@@ -123,7 +123,7 @@ void Load_Map(int seed, int sensitivity, player Pl) {
 				rlutil::setColor(7);
 				cout << 'M';
 			}
-			else {
+			else{
 				rlutil::setColor(2);
 				cout << 'O';
 			}
