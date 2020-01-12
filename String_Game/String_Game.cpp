@@ -12,7 +12,7 @@ public:
 	int y;
 };
 
-string get_map(int, int, int, int);
+string get_map(int, int, int);
 
 void Load_Map(string, int, player);
 
@@ -30,17 +30,18 @@ void Load_Map(string, int, player);
 */
 int main()
 {
-	int seed, sensitivity;
+	int seed, sensitivity, velikost = 100;
 	cout << "Vnesi seed: ";
 	cin >> seed;
 	cout << "Vnesi sensitivity: ";
 	cin >> sensitivity;
-	string map = get_map(seed, sensitivity, 100, 100);
+	string map = get_map(seed, sensitivity, velikost);
 	bool Game = true, Input_Buffer = false;
 	player Pl;
 	Pl.x = 0;
 	Pl.y = 0;
-	Load_Map(map, 5000, Pl);
+	system("CLS");
+	Load_Map(map, velikost, Pl);
 	while (Game == true) {
 		if (kbhit() && Input_Buffer == false) {
 			Input_Buffer = true;
@@ -53,8 +54,10 @@ int main()
 				Pl.x += 1;
 			else if (input == 'a')
 				Pl.x -= 1;
-			system("CLS");
-			Load_Map(map, 2500, Pl);
+			//system("CLS");
+			for (int i = 0; i < 10; i++)
+				cout << endl;
+			Load_Map(map, velikost, Pl);
 			rlutil::setColor(7);
 			cout << endl;
 			rlutil::setColor(7);
@@ -67,10 +70,10 @@ int main()
 	return 0;
 }
 
-string get_map(int seed, int sensitivity, int velikost, int visina) {
+string get_map(int seed, int sensitivity, int velikost) {
 	siv::PerlinNoise pn(seed);
 	string map;
-	for (int y = 0; y < visina; y++) {
+	for (int y = 0; y < velikost; y++) {
 		for (int x = 0; x < velikost; x++) {
 			double x1 = (double)x / ((double)sensitivity);
 			double y1 = (double)y / ((double)sensitivity);
@@ -87,7 +90,7 @@ string get_map(int seed, int sensitivity, int velikost, int visina) {
 	return map;
 }
 
-void Load_Map(string map, int debelina, player Pl) {
+void Load_Map(string map, int velikost, player Pl) {
 	cout << (char)201;
 	for (int i = 0; i < 64; i++) {
 		cout << (char)205;
@@ -99,15 +102,16 @@ void Load_Map(string map, int debelina, player Pl) {
 		x = 0;
 	if (y < 0)
 		y = 0;
-	for (; y < Pl.y + 32; y++) {
+	for (; y < Pl.y + 16; y++) { // y
 		cout << (char)186;
 		int x = Pl.x - 32;
 		if (x < 0)
 			x = 0;
-		for (; x < Pl.x + 32; x++) {
-			int naslov = x + y * debelina;
-			
-			if (Pl.x + Pl.y * debelina == naslov) {
+		for (; x < Pl.x + 32; x++) { // x
+			int naslov = x + y * velikost;
+			if (naslov >= velikost * velikost + 1)
+				break;
+			if (Pl.x + Pl.y * velikost == naslov) {
 				rlutil::setColor(4);
 				cout << 'P';
 			}
@@ -118,6 +122,7 @@ void Load_Map(string map, int debelina, player Pl) {
 					rlutil::setColor(1);
 				else if (map[naslov] == 'M')
 					rlutil::setColor(7);
+				//printf("%c",map[naslov]);
 				cout << map[naslov];
 			}
 		}
